@@ -1,4 +1,4 @@
-package com.radiuk.authservice;
+package com.radiuk.auth_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

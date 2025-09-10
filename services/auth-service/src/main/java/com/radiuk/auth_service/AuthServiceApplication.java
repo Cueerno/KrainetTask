@@ -1,4 +1,4 @@
-package com.radiuk.authservice;
+package com.radiuk.auth_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
