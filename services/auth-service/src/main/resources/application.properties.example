@@ -1,0 +1,17 @@
+spring.application.name=auth-service
+
+
+# Data Source
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=jdbc:postgresql://localhost:5432/krainet_task_db
+spring.datasource.username=
+spring.datasource.password=
+
+# Hibernate
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.show_sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# JWT
+secret=
+token_lifecycle=
