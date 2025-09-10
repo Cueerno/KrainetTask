@@ -9,3 +9,5 @@ gen
 
 
 .env
+*.properties
+!*.properties.example
