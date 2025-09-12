@@ -42,6 +42,7 @@ public class User {
     private OffsetDateTime updatedAt;
 
     public enum Role {
-        ROLE_USER, ROLE_ADMIN
+        USER,
+        ADMIN
     }
 }
