@@ -7,28 +7,25 @@ import com.radiuk.auth_service.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody UserRegistrationDto userRegistrationDto) {
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserRegistrationDto userRegistrationDto) {
         authService.register(userRegistrationDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new MessageResponse("User created"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserAuthDto userAuthDto) {
-        return ResponseEntity.ok(Map.of("token", ""));
+        return ResponseEntity.ok(Map.of("token", authService.authenticate(userAuthDto)));
     }
 }
