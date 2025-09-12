@@ -1,15 +1,21 @@
 package com.radiuk.auth_service.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +41,13 @@ public class User {
     @Column(name = "role", nullable = false, length = 50)
     private Role role;
 
+    @CreatedDate
     @Column(name = "registered_at")
-    private OffsetDateTime registeredAt;
+    private Instant registeredAt;
 
+    @LastModifiedDate
     @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    private Instant updatedAt;
 
     public enum Role {
         USER,
