@@ -2,15 +2,13 @@ package com.radiuk.auth_service.contoller;
 
 import com.radiuk.auth_service.dto.UserAuthDto;
 import com.radiuk.auth_service.dto.UserRegistrationDto;
-import com.radiuk.auth_service.model.MessageResponse;
 import com.radiuk.auth_service.dto.UserResponseDto;
+import com.radiuk.auth_service.model.AuthResponse;
 import com.radiuk.auth_service.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +23,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserAuthDto userAuthDto) {
-        return ResponseEntity.ok(Map.of("token", authService.authenticate(userAuthDto)));
+    public ResponseEntity<AuthResponse> login(@RequestBody UserAuthDto userAuthDto) {
+        return ResponseEntity.ok(authService.authenticate(userAuthDto));
     }
 }

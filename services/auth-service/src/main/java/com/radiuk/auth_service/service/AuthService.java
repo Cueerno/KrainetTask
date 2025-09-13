@@ -5,6 +5,7 @@ import com.radiuk.auth_service.dto.UserRegistrationDto;
 import com.radiuk.auth_service.dto.UserResponseDto;
 import com.radiuk.auth_service.exception.UserNotCreatedException;
 import com.radiuk.auth_service.mapper.UserMapper;
+import com.radiuk.auth_service.model.AuthResponse;
 import com.radiuk.auth_service.model.User;
 import com.radiuk.auth_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,7 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.util.Optional;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +50,8 @@ public class AuthService {
         return userMapper.toUserResponseDto(savedUser);
     }
 
-    public String authenticate(UserAuthDto dto) {
+    @Transactional(readOnly = true)
+    public AuthResponse authenticate(UserAuthDto dto) {
         User user = userRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
 
@@ -58,24 +59,23 @@ public class AuthService {
             throw new BadCredentialsException("Invalid credentials");
         }
 
-        return generateToken(user);
+        return new AuthResponse(generateToken(user), "Bearer", tokenExpirySeconds);
     }
 
     private String generateToken(User user) {
-        OffsetDateTime now = OffsetDateTime.now();
+        Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("auth-service")
-                .issuedAt(now.toInstant())
-                .expiresAt(now.plusSeconds(tokenExpirySeconds).toInstant())
+                .issuedAt(now)
+                .expiresAt(now.plusSeconds(tokenExpirySeconds))
                 .subject(user.getEmail())
-                .claim("role", user.getRole())
+                .claim("authorities", "ROLE_" + user.getRole().name())
                 .claim("userId", user.getId())
-                .claim("email", user.getEmail())
                 .build();
 
-        JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
-
-        JwtEncoderParameters params = JwtEncoderParameters.from(jwsHeader, claims);
+        JwtEncoderParameters params = JwtEncoderParameters.from(
+                JwsHeader.with(MacAlgorithm.HS256).build(), claims
+        );
 
         return jwtEncoder.encode(params).getTokenValue();
     }
