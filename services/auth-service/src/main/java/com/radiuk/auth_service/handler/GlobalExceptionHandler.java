@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException exception) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 new ErrorResponse(
-                        OffsetDateTime.now(),
+                        Instant.now(),
                         HttpStatus.FORBIDDEN.value(),
                         HttpStatus.FORBIDDEN.getReasonPhrase(),
                         exception.getMessage()
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleJwtException(JwtException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
-                        OffsetDateTime.now(),
+                        Instant.now(),
                         HttpStatus.BAD_REQUEST.value(),
                         HttpStatus.BAD_REQUEST.getReasonPhrase(),
                         exception.getMessage()
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
-                        OffsetDateTime.now(),
+                        Instant.now(),
                         HttpStatus.BAD_REQUEST.value(),
                         HttpStatus.BAD_REQUEST.getReasonPhrase(),
                         exception.getMessage()
@@ -59,24 +59,29 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<ErrorResponse> handleIOException(IOException exception) {
+    public ResponseEntity<ErrorResponse> handleIOException() {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new ErrorResponse(
-                        OffsetDateTime.now(),
+                        Instant.now(),
                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                        exception.getMessage()
+                        "I/O error"
                 )
         );
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException exception) {
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
-                        OffsetDateTime.now(),
+                        Instant.now(),
                         HttpStatus.BAD_REQUEST.value(),
-                        HttpStatus.BAD_GATEWAY.getReasonPhrase(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        "Invalid credentials"
+                )
+        );
+    }
+
                         exception.getMessage()
                 )
         );
@@ -86,7 +91,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserNotCreatedException(UserNotCreatedException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
-                        OffsetDateTime.now(),
+                        Instant.now(),
                         HttpStatus.BAD_REQUEST.value(),
                         HttpStatus.BAD_REQUEST.getReasonPhrase(),
                         exception.getMessage()
@@ -98,7 +103,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserNotUpdatedException(UserNotUpdatedException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
-                        OffsetDateTime.now(),
+                        Instant.now(),
                         HttpStatus.BAD_REQUEST.value(),
                         HttpStatus.BAD_REQUEST.getReasonPhrase(),
                         exception.getMessage()
@@ -115,7 +120,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
-                        OffsetDateTime.now(),
+                        Instant.now(),
                         HttpStatus.BAD_REQUEST.value(),
                         HttpStatus.BAD_REQUEST.getReasonPhrase(),
                         defaultMessage
@@ -126,7 +131,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(Exception exception) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new ErrorResponse(
-                        OffsetDateTime.now(),
+                        Instant.now(),
                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
                         Collections.singletonList(exception.getMessage()

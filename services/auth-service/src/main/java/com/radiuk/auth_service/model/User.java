@@ -11,7 +11,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +25,7 @@ public class User {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Column(name = "password", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "password", nullable = false, length = 100)
     private String password;
 
     @Column(name = "firstname", nullable = false)

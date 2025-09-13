@@ -53,15 +53,21 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    private SecretKeySpec secretKey() {
+        byte[] keyBytes = Base64.getDecoder().decode(secretBase64);
+        return new SecretKeySpec(keyBytes, "HmacSHA256");
+    }
+
     @Bean
     public JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
-        return NimbusJwtDecoder.withSecretKey(secretKey).build();
+        return NimbusJwtDecoder.withSecretKey(secretKey()).build();
     }
 
     @Bean
     public JwtEncoder jwtEncoder() {
         SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
         return new NimbusJwtEncoder(new ImmutableSecret<>(secretKey));
+        return new NimbusJwtEncoder(new ImmutableSecret<>(secretKey()));
+    }
     }
 }
