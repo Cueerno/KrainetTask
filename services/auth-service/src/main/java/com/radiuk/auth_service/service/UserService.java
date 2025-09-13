@@ -12,8 +12,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -28,22 +26,26 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
-    @Transactional(readOnly = true)
-    public void updateMe(UserUpdateDto userUpdateDto, Jwt jwt) {
-        if (userRepository.existsByEmail(userUpdateDto.email())) {
-            throw new UserNotUpdatedException("User with this email already exists");
-        }
-        if (userRepository.existsByUsername(userUpdateDto.username())) {
-            throw new UserNotUpdatedException("User with this username already exists");
-        }
-
+    @Transactional
+    public UserResponseDto updateMe(UserUpdateDto userUpdateDto, Jwt jwt) {
         User user = userRepository.findByEmail(jwt.getSubject())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Optional.ofNullable(userUpdateDto.username()).ifPresent(user::setUsername);
-        Optional.ofNullable(userUpdateDto.email()).ifPresent(user::setEmail);
-        Optional.ofNullable(userUpdateDto.firstname()).ifPresent(user::setFirstname);
-        Optional.ofNullable(userUpdateDto.lastname()).ifPresent(user::setLastname);
+        if (userUpdateDto.email() != null && !userUpdateDto.email().equals(user.getEmail())
+                && userRepository.existsByEmail(userUpdateDto.email())) {
+            throw new UserNotUpdatedException("User with this email already exists");
+        }
+
+        if (userUpdateDto.username() != null && !userUpdateDto.username().equals(user.getUsername())
+                && userRepository.existsByUsername(userUpdateDto.username())) {
+            throw new UserNotUpdatedException("User with this username already exists");
+        }
+
+        userMapper.updateFromDto(userUpdateDto, user);
+
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toUserResponseDto(updatedUser);
     }
 
 

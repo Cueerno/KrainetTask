@@ -23,9 +23,8 @@ public class UserController {
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<?> updateMe(@RequestBody UserUpdateDto userUpdateDto, @AuthenticationPrincipal Jwt jwt) {
-        userService.updateMe(userUpdateDto, jwt);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new MessageResponse("User updated"));
+    public ResponseEntity<UserResponseDto> updateMe(@RequestBody UserUpdateDto userUpdateDto, @AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateMe(userUpdateDto, jwt));
     }
 
     @DeleteMapping("/me")
