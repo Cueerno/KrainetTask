@@ -1,7 +1,7 @@
 package com.radiuk.auth_service.contoller;
 
+import com.radiuk.auth_service.dto.UserResponseDto;
 import com.radiuk.auth_service.dto.UserUpdateDto;
-import com.radiuk.auth_service.model.MessageResponse;
 import com.radiuk.auth_service.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +18,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<?> getMe(@AuthenticationPrincipal Jwt jwt) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.getMe(jwt));
+    public ResponseEntity<UserResponseDto> getMe(@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getMe(jwt));
     }
 
     @PatchMapping("/me")
@@ -28,8 +28,8 @@ public class UserController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<?> deleteMe(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<Void> deleteMe(@AuthenticationPrincipal Jwt jwt) {
         userService.deleteMe(jwt);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new MessageResponse("User deleted"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
