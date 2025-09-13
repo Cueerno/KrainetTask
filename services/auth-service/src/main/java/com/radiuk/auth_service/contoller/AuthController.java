@@ -3,6 +3,7 @@ package com.radiuk.auth_service.contoller;
 import com.radiuk.auth_service.dto.UserAuthDto;
 import com.radiuk.auth_service.dto.UserRegistrationDto;
 import com.radiuk.auth_service.model.MessageResponse;
+import com.radiuk.auth_service.dto.UserResponseDto;
 import com.radiuk.auth_service.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRegistrationDto userRegistrationDto) {
-        authService.register(userRegistrationDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new MessageResponse("User created"));
+    public ResponseEntity<UserResponseDto> register(@RequestBody UserRegistrationDto userRegistrationDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(userRegistrationDto));
     }
 
     @PostMapping("/login")

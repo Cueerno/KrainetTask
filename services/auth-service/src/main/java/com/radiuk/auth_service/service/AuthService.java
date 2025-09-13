@@ -2,6 +2,7 @@ package com.radiuk.auth_service.service;
 
 import com.radiuk.auth_service.dto.UserAuthDto;
 import com.radiuk.auth_service.dto.UserRegistrationDto;
+import com.radiuk.auth_service.dto.UserResponseDto;
 import com.radiuk.auth_service.exception.UserNotCreatedException;
 import com.radiuk.auth_service.mapper.UserMapper;
 import com.radiuk.auth_service.model.User;
@@ -31,17 +32,22 @@ public class AuthService {
     private long tokenExpirySeconds;
 
     @Transactional
-    public void register(UserRegistrationDto userRegistrationDto) {
-        Optional<User> existing = userRepository.findByEmail(userRegistrationDto.email());
-        if (existing.isPresent()) {
+    public UserResponseDto register(UserRegistrationDto userRegistrationDto) {
+        if (userRepository.existsByEmail(userRegistrationDto.email())) {
             throw new UserNotCreatedException("User with this email already exists");
+        }
+
+        if (userRepository.existsByUsername(userRegistrationDto.username())) {
+            throw new UserNotCreatedException("User with this username already exists");
         }
 
         User user = userMapper.fromRegistrationDto(userRegistrationDto);
         user.setPassword(passwordEncoder.encode(userRegistrationDto.password()));
         user.setRole(User.Role.USER);
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toUserResponseDto(savedUser);
     }
 
     public String authenticate(UserAuthDto dto) {
