@@ -6,6 +6,7 @@ import com.radiuk.auth_service.exception.UserNotFoundException;
 import com.radiuk.auth_service.exception.UserNotUpdatedException;
 import com.radiuk.auth_service.mapper.UserMapper;
 import com.radiuk.auth_service.model.User;
+import com.radiuk.auth_service.publisher.UserEventPublisher;
 import com.radiuk.auth_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserEventPublisher userEventPublisher;
     private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
@@ -45,14 +47,18 @@ public class UserService {
 
         User updatedUser = userRepository.save(user);
 
+        userEventPublisher.publishUserEvent(updatedUser, "UPDATED");
+
         return userMapper.toUserResponseDto(updatedUser);
     }
 
-
+    @Transactional
     public void deleteMe(Jwt jwt) {
         User user = userRepository.findByEmail(jwt.getSubject())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         userRepository.deleteById(user.getId());
+
+        userEventPublisher.publishUserEvent(user, "DELETED");
     }
 }

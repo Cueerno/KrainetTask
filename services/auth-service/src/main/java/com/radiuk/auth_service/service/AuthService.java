@@ -7,6 +7,7 @@ import com.radiuk.auth_service.exception.UserNotCreatedException;
 import com.radiuk.auth_service.mapper.UserMapper;
 import com.radiuk.auth_service.model.AuthResponse;
 import com.radiuk.auth_service.model.User;
+import com.radiuk.auth_service.publisher.UserEventPublisher;
 import com.radiuk.auth_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,7 @@ import java.time.Instant;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final UserEventPublisher userEventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final JwtEncoder jwtEncoder;
@@ -46,6 +48,8 @@ public class AuthService {
         user.setRole(User.Role.USER);
 
         User savedUser = userRepository.save(user);
+
+        userEventPublisher.publishUserEvent(savedUser, "CREATED");
 
         return userMapper.toUserResponseDto(savedUser);
     }
