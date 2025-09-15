@@ -160,4 +160,11 @@ public class GlobalExceptionHandler {
                 )
         );
     }
+
+    public record ErrorResponse(
+            Instant timestamp,
+            int httpStatus,
+            String error,
+            Object message
+    ) {}
 }
