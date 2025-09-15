@@ -86,7 +86,7 @@ public class AuthService {
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(tokenExpirySeconds))
                 .subject(user.getEmail())
-                .claim("authorities", "ROLE_" + user.getRole().name())
+                .claim("authorities", user.getRole().name())
                 .claim("userId", user.getId())
                 .build();
 
