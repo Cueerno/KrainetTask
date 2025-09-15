@@ -23,6 +23,5 @@ public class UserEventsListener {
         }
 
         emailService.sendEmail(message.adminEmail(), message.subject(), message.text());
-        log.info("Notification sent to {}", message.adminEmail());
     }
 }

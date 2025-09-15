@@ -11,3 +11,6 @@ gen
 .env
 *.properties
 !*.properties.example
+
+services/auth-service/logs
+services/notification-service/logs

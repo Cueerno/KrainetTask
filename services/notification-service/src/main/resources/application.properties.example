@@ -15,3 +15,9 @@ spring.mail.username=your-email@example.com
 spring.mail.password=your-email-password
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
+
+# Logging
+logging.level.root=INFO
+logging.level.org.springframework.web=DEBUG
+logging.level.com.radiuk.auth_service=DEBUG
+logging.file.name=services/notification-service/logs

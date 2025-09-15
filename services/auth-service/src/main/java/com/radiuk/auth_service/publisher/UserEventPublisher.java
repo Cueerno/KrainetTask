@@ -5,6 +5,7 @@ import com.radiuk.auth_service.event.UserNotificationMessage;
 import com.radiuk.auth_service.model.User;
 import com.radiuk.auth_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserEventPublisher {
@@ -46,6 +48,8 @@ public class UserEventPublisher {
                                 return msg;
                             }
                     );
+                    log.info("Published notification to admin={} for user={} action={} correlationId={}",
+                            admin.getEmail(), user.getUsername(), action, correlationId);
                 }
             });
         }
