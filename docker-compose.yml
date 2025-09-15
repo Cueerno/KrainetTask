@@ -44,6 +44,17 @@ services:
 #      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - postgres
+  notification-service:
+    build:
+      context: "./services/notification-service"
+      dockerfile: "Dockerfile"
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+      - auth-service
     restart: always
 
   mailhog:
