@@ -3,7 +3,7 @@ package com.radiuk.auth_service.contoller;
 import com.radiuk.auth_service.dto.UserAuthDto;
 import com.radiuk.auth_service.dto.UserRegistrationDto;
 import com.radiuk.auth_service.dto.UserResponseDto;
-import com.radiuk.auth_service.model.AuthResponse;
+import com.radiuk.auth_service.dto.AuthResponse;
 import com.radiuk.auth_service.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

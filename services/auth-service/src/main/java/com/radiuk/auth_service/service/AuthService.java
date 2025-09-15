@@ -5,7 +5,7 @@ import com.radiuk.auth_service.dto.UserRegistrationDto;
 import com.radiuk.auth_service.dto.UserResponseDto;
 import com.radiuk.auth_service.exception.UserNotCreatedException;
 import com.radiuk.auth_service.mapper.UserMapper;
-import com.radiuk.auth_service.model.AuthResponse;
+import com.radiuk.auth_service.dto.AuthResponse;
 import com.radiuk.auth_service.model.User;
 import com.radiuk.auth_service.publisher.UserEventPublisher;
 import com.radiuk.auth_service.repository.UserRepository;
