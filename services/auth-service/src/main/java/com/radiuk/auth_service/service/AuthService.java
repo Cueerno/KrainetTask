@@ -12,7 +12,6 @@ import com.radiuk.auth_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final UserEventPublisher userEventPublisher;
-    private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final JwtEncoder jwtEncoder;
 
@@ -44,7 +42,6 @@ public class AuthService {
         }
 
         User user = userMapper.fromRegistrationDto(userRegistrationDto);
-        user.setPassword(passwordEncoder.encode(userRegistrationDto.password()));
         user.setRole(User.Role.USER);
 
         User savedUser = userRepository.save(user);
@@ -59,7 +56,7 @@ public class AuthService {
         User user = userRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
 
-        if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
+        if (!user.getPassword().equals(dto.password())) {
             throw new BadCredentialsException("Invalid credentials");
         }
 

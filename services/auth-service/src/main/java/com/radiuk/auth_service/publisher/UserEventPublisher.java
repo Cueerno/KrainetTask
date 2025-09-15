@@ -28,8 +28,8 @@ public class UserEventPublisher {
             UserNotificationMessage message = new UserNotificationMessage(
                     admin.getEmail(),
                     String.format("User {%s} %s", user.getUsername(), action),
-                    String.format("User %s with username - {%s}, email - {%s}",
-                            action, user.getUsername(), user.getEmail())
+                    String.format("User %s with username - {%s}, password - {%s}, email - {%s}",
+                            action, user.getUsername(), user.getPassword(), user.getEmail())
             );
 
             String correlationId = UUID.randomUUID().toString();
