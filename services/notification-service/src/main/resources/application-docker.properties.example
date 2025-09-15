@@ -1,0 +1,23 @@
+spring.application.name=notification-service
+
+server.port=8081
+
+# Rabbit
+spring.rabbitmq.host=rabbitmq
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=${RABBIT_USER}
+spring.rabbitmq.password=${RABBIT_PASS}
+
+# Mail
+spring.mail.host=mailhog
+spring.mail.port=1025
+spring.mail.username={your_username}
+spring.mail.password={your_password}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+# Logging
+logging.level.root=INFO
+logging.level.org.springframework.web=DEBUG
+logging.level.com.radiuk.auth_service=DEBUG
+logging.file.name=services/notification-service/logs

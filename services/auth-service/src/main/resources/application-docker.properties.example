@@ -1,0 +1,32 @@
+spring.application.name=auth-service
+
+# Data Source
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+spring.datasource.username=${POSTGRES_USER}
+spring.datasource.password=${POSTGRES_PASSWORD}
+
+# Hibernate
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.show_sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# Flyway
+spring.flyway.user=${POSTGRES_USER}
+spring.flyway.password=${POSTGRES_PASSWORD}
+
+# JWT
+jwt.secret-base64={your_secret}
+jwt.expiration=3600
+
+# Rabbit
+spring.rabbitmq.host=rabbitmq
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=${RABBIT_USER}
+spring.rabbitmq.password=${RABBIT_PASS}
+
+# Logging
+logging.level.root=INFO
+logging.level.org.springframework.web=DEBUG
+logging.level.com.radiuk.auth_service=DEBUG
+logging.file.name=services/auth-service/logs

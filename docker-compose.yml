@@ -1,6 +1,7 @@
 networks:
   default:
     name: dev
+    external: true
 
 services:
   postgres:
@@ -40,10 +41,13 @@ services:
       - "8080:8080"
     env_file:
       - .env
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - postgres
+      - rabbitmq
+    restart: always
+
   notification-service:
     build:
       context: "./services/notification-service"
@@ -52,6 +56,8 @@ services:
       - "8081:8081"
     env_file:
       - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - rabbitmq
       - auth-service
