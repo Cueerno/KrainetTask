@@ -1,5 +1,3 @@
-drop table if exists users cascade;
-
 create table users
 (
     id            bigserial primary key,
