@@ -16,8 +16,8 @@ spring.flyway.user=${POSTGRES_USER}
 spring.flyway.password=${POSTGRES_PASSWORD}
 
 # JWT
-jwt.secret-base64={your_secret}
-jwt.expiration=3600
+jwt.secret-base64=${JWT_SECRET_BASE64}
+jwt.expiration=${JWT_EXPIRATION}
 
 # Rabbit
 spring.rabbitmq.host=rabbitmq
