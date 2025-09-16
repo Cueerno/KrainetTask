@@ -7,13 +7,17 @@ git clone https://github.com/Cueerno/UnmatchedTracker.git
 ```
 
 ### 2. Set up environment <br>
-Find the file .env.example and rename it to .env and fill it with your data (database password, etc.)
-.env.example -> .env
+Find the file .env.example and rename it to .env and fill it with your data (database password, etc.) <br>
+*.env.example -> .env*
 ```dotenv
 # PostgreSQL
 POSTGRES_DB={your_database_name}
 POSTGRES_USER={your_database_username}
 POSTGRES_PASSWORD={your_database_password}
+
+# Jwt
+JWT_SECRET_BASE64={your_64bit_secret}
+JWT_EXPIRATION={your_expiration}
 
 # RabbitMQ  default credentials - guest guest
 RABBIT_USER={your_rabbit_username}
@@ -21,12 +25,16 @@ RABBIT_PASS={your_rabbir_password}
 ```
 
 ### 3. Set up Spring <br>
-Find the file application-docker.properties.example in two microservices and rename it to application-docker.properties
-application-docker.properties.example -> application-docker.properties
+Find the file application-docker.properties.example in two microservices and rename it to application-docker.properties <br>
+*application-docker.properties.example -> application-docker.properties*
 
 ### 4. Set up Docker Compose
 ```docker
 docker-compose up --build
+```
+or (in latest versions)
+```docker
+docker compose up --build
 ```
 
 ### 5. Go to your browser and follow these two addresses:
@@ -67,7 +75,9 @@ Authentication (Login)
 **Response (200 OK):**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoLXNlcnZpY2UiLCJzdWIiOiJxd2VydHlAZ21haWwuY29tIiwiZXhwIjoxNzU4MDYyODE3LCJpYXQiOjE3NTgwNTkyMTcsInVzZXJJZCI6NSwiYXV0aG9yaXRpZXMiOiJVU0VSIn0.OZND6kwGmb8FkF7dBb4_fr_4u5ksWgZ16xtdtcr5pnc",
+  "tokenType": "Bearer",
+  "expiresIn": 3600
 }
 ```
 
@@ -96,10 +106,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```json
 {
   "username": "username",
-  "password": "password",
   "firstname": "firstname",
   "lastname": "lastname",
-  "email": "email@example.com"
+  "email": "email@example.com",
+  "registeredAt": "2025-09-15T00:00:00.000000000Z"
 }
 ```
 #### 2) `PATCH /api/v1/users/me` - Update Current User Profile
