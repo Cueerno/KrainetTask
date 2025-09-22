@@ -3,7 +3,6 @@ package com.radiuk.auth_service.handler;
 import com.radiuk.auth_service.exception.UserNotCreatedException;
 import com.radiuk.auth_service.exception.UserNotFoundException;
 import com.radiuk.auth_service.exception.UserNotUpdatedException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -21,13 +20,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException exception) {
-        log.error("Access denied: {}", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 new ErrorResponse(
                         Instant.now(),
@@ -40,7 +37,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ErrorResponse> handleJwtException(JwtException exception) {
-        log.error("JWT error: {}", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
                         Instant.now(),
@@ -53,7 +49,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
-        log.error("Illegal argument: {}", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
                         Instant.now(),
@@ -66,7 +61,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ErrorResponse> handleIOException(IOException exception) {
-        log.error("I/O error: {}", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new ErrorResponse(
                         Instant.now(),
@@ -79,7 +73,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException exception) {
-        log.error("Authentication failed: {}", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
                         Instant.now(),
@@ -92,7 +85,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
-        log.error("Data integrity violation: {}", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ErrorResponse(
                         Instant.now(),
@@ -105,7 +97,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException exception) {
-        log.error("User not found: {}", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ErrorResponse(
                         Instant.now(),
@@ -118,7 +109,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotCreatedException.class)
     public ResponseEntity<ErrorResponse> handleUserNotCreatedException(UserNotCreatedException exception) {
-        log.error("User not created: {}", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
                         Instant.now(),
@@ -131,7 +121,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotUpdatedException.class)
     public ResponseEntity<ErrorResponse> handleUserNotUpdatedException(UserNotUpdatedException exception) {
-        log.error("User not updated: {}", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
                         Instant.now(),
@@ -149,7 +138,6 @@ public class GlobalExceptionHandler {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
 
-        log.error("Validation failed: {}", defaultMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponse(
                         Instant.now(),
@@ -162,7 +150,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception exception) {
-        log.error("Unexpected error: {}", exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new ErrorResponse(
                         Instant.now(),
