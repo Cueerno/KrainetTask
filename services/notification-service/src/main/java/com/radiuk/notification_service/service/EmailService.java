@@ -1,12 +1,10 @@
 package com.radiuk.notification_service.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -21,7 +19,5 @@ public class EmailService {
         message.setText(text);
 
         mailSender.send(message);
-
-        log.info("Email sent successfully to {}", to);
     }
 }
