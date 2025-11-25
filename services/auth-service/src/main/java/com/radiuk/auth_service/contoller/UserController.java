@@ -30,6 +30,6 @@ public class UserController {
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteMe(@AuthenticationPrincipal Jwt jwt) {
         userService.deleteMe(jwt);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 }
