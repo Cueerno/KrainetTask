@@ -24,9 +24,3 @@ spring.rabbitmq.host=rabbitmq
 spring.rabbitmq.port=5672
 spring.rabbitmq.username=${RABBIT_USER}
 spring.rabbitmq.password=${RABBIT_PASS}
-
-# Logging
-logging.level.root=INFO
-logging.level.org.springframework.web=DEBUG
-logging.level.com.radiuk.auth_service=DEBUG
-logging.file.name=services/auth-service/logs
