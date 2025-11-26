@@ -8,6 +8,7 @@ import com.radiuk.auth_service.model.*;
 import com.radiuk.auth_service.publisher.UserEventPublisher;
 import com.radiuk.auth_service.repository.UserRepository;
 import com.radiuk.auth_service.service.AuthService;
+import com.radiuk.auth_service.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,10 +30,9 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserEventPublisher userEventPublisher;
     private final UserMapper userMapper;
-    private final JwtEncoder jwtEncoder;
-
-    @Value("${jwt.expiration}")
-    private long tokenExpirySeconds;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserValidatorService userValidatorService;
 
     @Override
     @Transactional
@@ -74,25 +74,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         log.info("Authenticated user {}", dto);
-        return new AuthResponse(generateToken(user), "Bearer", tokenExpirySeconds);
-    }
-
-    private String generateToken(User user) {
-        Instant now = Instant.now();
-        JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("auth-service")
-                .issuedAt(now)
-                .expiresAt(now.plusSeconds(tokenExpirySeconds))
-                .subject(user.getEmail())
-                .claim("authorities", user.getRole().name())
-                .claim("userId", user.getId())
-                .claim("role", user.getRole().name())
-                .build();
-
-        JwtEncoderParameters params = JwtEncoderParameters.from(
-                JwsHeader.with(MacAlgorithm.HS256).build(), claims
-        );
-
-        return jwtEncoder.encode(params).getTokenValue();
+        return new AuthResponse(jwtService.generateToken(user));
     }
 }
