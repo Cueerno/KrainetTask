@@ -10,6 +10,7 @@ import com.radiuk.auth_service.model.UserAction;
 import com.radiuk.auth_service.publisher.UserEventPublisher;
 import com.radiuk.auth_service.repository.UserRepository;
 import com.radiuk.auth_service.service.AdminService;
+import com.radiuk.auth_service.service.UserValidatorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
     private final UserEventPublisher userEventPublisher;
     private final UserMapper userMapper;
+    private final UserValidatorService userValidatorService;
 
     @Override
     @Transactional(readOnly = true)
@@ -36,15 +38,8 @@ public class AdminServiceImpl implements AdminService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (userUpdateDto.email() != null && !userUpdateDto.email().equals(user.getEmail())
-                && userRepository.existsByEmail(userUpdateDto.email())) {
-            throw new UserNotUpdatedException("User with this email already exists");
-        }
-
-        if (userUpdateDto.username() != null && !userUpdateDto.username().equals(user.getUsername())
-                && userRepository.existsByUsername(userUpdateDto.username())) {
-            throw new UserNotUpdatedException("User with this username already exists");
-        }
+        userValidatorService.validateEmailChange(userUpdateDto.email(), user.getEmail());
+        userValidatorService.validateUsernameChange(userUpdateDto.username(), user.getUsername());
 
         userMapper.updateFromDto(userUpdateDto, user);
 
