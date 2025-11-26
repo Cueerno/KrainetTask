@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User user = userMapper.fromRegistrationDto(userRegistrationDto);
+        user.setPassword(passwordEncoder.encode(userRegistrationDto.password()));
         user.setRole(User.Role.USER);
 
         User savedUser = userRepository.save(user);
@@ -66,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
                     return new BadCredentialsException("Invalid credentials");
                 });
 
-        if (!user.getPassword().equals(dto.password())) {
+        if (passwordEncoder.matches(dto.password(), user.getPassword())) {
             log.warn("Authentication failed: invalid password");
             throw new BadCredentialsException("Invalid credentials");
         }
