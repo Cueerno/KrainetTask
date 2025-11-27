@@ -2,30 +2,24 @@ package com.radiuk.auth_service.service.impl;
 
 import com.radiuk.auth_service.annotation.NoLogging;
 import com.radiuk.auth_service.dto.*;
-import com.radiuk.auth_service.exception.UserNotCreatedException;
 import com.radiuk.auth_service.mapper.UserMapper;
 import com.radiuk.auth_service.model.*;
 import com.radiuk.auth_service.publisher.UserEventPublisher;
 import com.radiuk.auth_service.repository.UserRepository;
 import com.radiuk.auth_service.service.AuthService;
 import com.radiuk.auth_service.service.JwtService;
+import com.radiuk.auth_service.service.UserValidatorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-
 
     private final UserRepository userRepository;
     private final UserEventPublisher userEventPublisher;
@@ -37,13 +31,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public UserResponseDto register(UserRegistrationDto userRegistrationDto) {
-        if (userRepository.existsByEmail(userRegistrationDto.email())) {
-            throw new UserNotCreatedException("User with this email already exists");
-        }
-
-        if (userRepository.existsByUsername(userRegistrationDto.username())) {
-            throw new UserNotCreatedException("User with this username already exists");
-        }
+        userValidatorService.checkEmailExists(userRegistrationDto.email());
+        userValidatorService.checkUsernameExists(userRegistrationDto.username());
 
         User user = userMapper.fromRegistrationDto(userRegistrationDto);
         user.setPassword(passwordEncoder.encode(userRegistrationDto.password()));
@@ -65,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(dto.email())
                 .orElseThrow(() -> {
                     log.warn("Authentication failed: user not found");
-                    return new BadCredentialsException("Invalid credentials");
+                    return new BadCredentialsException("Invalid credentials, user not found");
                 });
 
         if (passwordEncoder.matches(dto.password(), user.getPassword())) {

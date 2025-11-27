@@ -3,7 +3,6 @@ package com.radiuk.auth_service.service.impl;
 import com.radiuk.auth_service.dto.UserResponseDto;
 import com.radiuk.auth_service.dto.UserUpdateDto;
 import com.radiuk.auth_service.exception.UserNotFoundException;
-import com.radiuk.auth_service.exception.UserNotUpdatedException;
 import com.radiuk.auth_service.mapper.UserMapper;
 import com.radiuk.auth_service.model.User;
 import com.radiuk.auth_service.model.UserAction;

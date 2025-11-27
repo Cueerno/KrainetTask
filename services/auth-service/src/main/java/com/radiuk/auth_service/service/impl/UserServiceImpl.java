@@ -3,7 +3,6 @@ package com.radiuk.auth_service.service.impl;
 import com.radiuk.auth_service.dto.UserResponseDto;
 import com.radiuk.auth_service.dto.UserUpdateDto;
 import com.radiuk.auth_service.exception.UserNotFoundException;
-import com.radiuk.auth_service.exception.UserNotUpdatedException;
 import com.radiuk.auth_service.mapper.UserMapper;
 import com.radiuk.auth_service.model.User;
 import com.radiuk.auth_service.model.UserAction;
@@ -28,9 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponseDto getMe(Jwt jwt) {
-        String email = jwt.getSubject();
-
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmail(jwt.getSubject())
                 .map(userMapper::toUserResponseDto)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
@@ -38,9 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponseDto updateMe(UserUpdateDto userUpdateDto, Jwt jwt) {
-        String email = jwt.getSubject();
-
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(jwt.getSubject())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         userValidatorService.validateEmailChange(userUpdateDto.email(), user.getEmail());
@@ -58,9 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteMe(Jwt jwt) {
-        String email = jwt.getSubject();
-
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(jwt.getSubject())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         userRepository.deleteById(user.getId());
