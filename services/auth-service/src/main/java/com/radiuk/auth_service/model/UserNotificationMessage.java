@@ -1,4 +1,4 @@
-package com.radiuk.auth_service.event;
+package com.radiuk.auth_service.model;
 
 public record UserNotificationMessage(
         String adminEmail,

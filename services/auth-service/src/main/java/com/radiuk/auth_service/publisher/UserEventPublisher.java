@@ -1,7 +1,7 @@
 package com.radiuk.auth_service.publisher;
 
 import com.radiuk.auth_service.config.RabbitConfig;
-import com.radiuk.auth_service.event.UserNotificationMessage;
+import com.radiuk.auth_service.model.UserNotificationMessage;
 import com.radiuk.auth_service.model.User;
 import com.radiuk.auth_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
