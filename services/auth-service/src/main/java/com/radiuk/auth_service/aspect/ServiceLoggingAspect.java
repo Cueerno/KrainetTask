@@ -5,12 +5,10 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Slf4j
 @Aspect
 @Component
-public class LoggingAspect {
+public class ServiceLoggingAspect {
 
     @Pointcut("execution(public * com.radiuk.auth_service.service..*(..))")
     public void serviceMethods() {}
@@ -28,17 +26,14 @@ public class LoggingAspect {
         String className = joinPoint.getTarget().getClass().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
 
-        if (result instanceof List<?>) {
-            log.info("[{}.{}] -> finished successfully: returned list with size={}", className, methodName, ((List<?>) result).size());
-        } else {
-            log.info("[{}.{}] -> finished successfully: result={}", className, methodName, result);
-        }
+        log.info("[{}.{}] -> finished successfully: result={}", className, methodName, result);
     }
 
     @AfterThrowing(pointcut = "serviceMethods()", throwing = "ex")
     public void logMethodException(JoinPoint joinPoint, Exception ex) {
         String className = joinPoint.getTarget().getClass().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
-        log.warn("[{}.{}] -> exception thrown: {}", className, methodName, ex.getMessage(), ex);
+        log.warn("[{}.{}] -> exception thrown: {} - {}",
+                className, methodName, ex.getClass().getSimpleName(), ex.getMessage(), ex);
     }
 }
