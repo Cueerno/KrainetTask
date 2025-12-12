@@ -1,6 +1,5 @@
 package com.radiuk.auth_service.service.impl;
 
-import com.radiuk.auth_service.annotation.NoLogging;
 import com.radiuk.auth_service.dto.*;
 import com.radiuk.auth_service.mapper.UserMapper;
 import com.radiuk.auth_service.model.*;
@@ -46,7 +45,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @NoLogging
     @Transactional(readOnly = true)
     public AuthResponse authenticate(UserAuthDto dto) {
         log.debug("Authenticating user {}", dto);
@@ -59,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
 
         if (passwordEncoder.matches(dto.password(), user.getPassword())) {
             log.warn("Authentication failed: invalid password");
-            throw new BadCredentialsException("Invalid credentials");
+            throw new BadCredentialsException("Invalid credentials: invalid password");
         }
 
         log.info("Authenticated user {}", dto);
