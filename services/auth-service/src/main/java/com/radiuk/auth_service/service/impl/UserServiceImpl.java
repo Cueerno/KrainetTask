@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponseDto getMe(Jwt jwt) {
-        return userRepository.findByEmail(jwt.getSubject())
+        return userRepository.findById(Long.valueOf(jwt.getSubject()))
                 .map(userMapper::toUserResponseDto)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponseDto updateMe(UserUpdateDto userUpdateDto, Jwt jwt) {
-        User user = userRepository.findByEmail(jwt.getSubject())
+        User user = userRepository.findById(Long.valueOf(jwt.getSubject()))
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         userValidatorService.validateEmailChange(userUpdateDto.email(), user.getEmail());
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteMe(Jwt jwt) {
-        User user = userRepository.findByEmail(jwt.getSubject())
+        User user = userRepository.findById(Long.valueOf(jwt.getSubject()))
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         userRepository.deleteById(user.getId());

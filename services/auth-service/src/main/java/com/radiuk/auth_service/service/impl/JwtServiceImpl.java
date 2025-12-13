@@ -28,9 +28,9 @@ public class JwtServiceImpl implements JwtService {
                 .issuer("auth-service")
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(tokenExpirySeconds))
-                .subject(user.getEmail())
+                .subject(user.getId().toString())
+                .claim("email", user.getEmail())
                 .claim("authorities", user.getRole().name())
-                .claim("userId", user.getId())
                 .claim("role", user.getRole().name())
                 .build();
 
