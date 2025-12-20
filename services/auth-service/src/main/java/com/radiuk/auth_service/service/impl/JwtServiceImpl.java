@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +31,7 @@ public class JwtServiceImpl implements JwtService {
                 .expiresAt(now.plusSeconds(tokenExpirySeconds))
                 .subject(user.getId().toString())
                 .claim("email", user.getEmail())
-                .claim("authorities", user.getRole().name())
-                .claim("role", user.getRole().name())
+                .claim("authorities", List.of(user.getRole().name()))
                 .build();
 
         JwtEncoderParameters params = JwtEncoderParameters.from(

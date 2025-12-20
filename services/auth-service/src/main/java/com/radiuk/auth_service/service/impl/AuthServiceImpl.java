@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
                     return new BadCredentialsException("Invalid credentials, user not found");
                 });
 
-        if (passwordEncoder.matches(dto.password(), user.getPassword())) {
+        if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
             log.warn("Authentication failed: invalid password");
             throw new BadCredentialsException("Invalid credentials: invalid password");
         }

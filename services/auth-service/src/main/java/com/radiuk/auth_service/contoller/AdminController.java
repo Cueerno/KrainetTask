@@ -5,12 +5,10 @@ import com.radiuk.auth_service.dto.UserUpdateDto;
 import com.radiuk.auth_service.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/v1/admin/users")
 public class AdminController {
 
