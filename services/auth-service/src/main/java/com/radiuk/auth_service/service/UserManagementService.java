@@ -7,5 +7,7 @@ public interface UserManagementService {
 
     User getUserByIdOrThrow(Long id);
 
-    void updateUser(User user, UserUpdateDto userUpdateDto);
+    User updateUserById(UserUpdateDto userUpdateDto, Long id);
+
+    void deleteUserById(Long id);
 }
