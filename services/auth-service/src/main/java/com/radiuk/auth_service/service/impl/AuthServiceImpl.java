@@ -1,15 +1,16 @@
 package com.radiuk.auth_service.service.impl;
 
 import com.radiuk.auth_service.dto.*;
+import com.radiuk.auth_service.event.UserCreatedEvent;
 import com.radiuk.auth_service.mapper.UserMapper;
 import com.radiuk.auth_service.model.*;
-import com.radiuk.auth_service.publisher.UserEventPublisher;
 import com.radiuk.auth_service.repository.UserRepository;
 import com.radiuk.auth_service.service.AuthService;
 import com.radiuk.auth_service.service.JwtService;
 import com.radiuk.auth_service.service.UserValidatorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final UserEventPublisher userEventPublisher;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final UserMapper userMapper;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
@@ -39,7 +40,9 @@ public class AuthServiceImpl implements AuthService {
 
         User savedUser = userRepository.save(user);
 
-        userEventPublisher.publishUserEvent(savedUser, UserAction.CREATED.name());
+        applicationEventPublisher.publishEvent(
+                new UserCreatedEvent(user.getUsername(), user.getEmail())
+        );
 
         return userMapper.toUserResponseDto(savedUser);
     }

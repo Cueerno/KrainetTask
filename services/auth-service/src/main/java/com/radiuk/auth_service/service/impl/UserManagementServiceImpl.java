@@ -1,15 +1,16 @@
 package com.radiuk.auth_service.service.impl;
 
 import com.radiuk.auth_service.dto.UserUpdateDto;
+import com.radiuk.auth_service.event.UserDeletedEvent;
+import com.radiuk.auth_service.event.UserUpdatedEvent;
 import com.radiuk.auth_service.exception.UserNotFoundException;
 import com.radiuk.auth_service.mapper.UserMapper;
 import com.radiuk.auth_service.model.User;
-import com.radiuk.auth_service.model.UserAction;
-import com.radiuk.auth_service.publisher.UserEventPublisher;
 import com.radiuk.auth_service.repository.UserRepository;
 import com.radiuk.auth_service.service.UserManagementService;
 import com.radiuk.auth_service.service.UserValidatorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +20,8 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     private final UserRepository userRepository;
     private final UserValidatorService userValidatorService;
-    private final UserEventPublisher userEventPublisher;
     private final UserMapper userMapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional(readOnly = true)
@@ -41,7 +42,9 @@ public class UserManagementServiceImpl implements UserManagementService {
 
         User savedUser = userRepository.save(user);
 
-        userEventPublisher.publishUserEvent(savedUser, UserAction.UPDATED.name());
+        applicationEventPublisher.publishEvent(
+                new UserUpdatedEvent(savedUser.getUsername(), savedUser.getEmail())
+        );
 
         return savedUser;
     }
@@ -49,7 +52,11 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Transactional
     public void deleteUserById(Long id) {
         User user = getUserByIdOrThrow(id);
+
         userRepository.deleteById(user.getId());
-        userEventPublisher.publishUserEvent(user, UserAction.DELETED.name());
+
+        applicationEventPublisher.publishEvent(
+                new UserDeletedEvent(user.getUsername(), user.getEmail())
+        );
     }
 }
