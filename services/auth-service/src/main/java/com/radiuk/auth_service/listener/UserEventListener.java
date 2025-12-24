@@ -1,7 +1,7 @@
 package com.radiuk.auth_service.listener;
 
 import com.radiuk.auth_service.event.UserCreatedEvent;
-import com.radiuk.auth_service.model.UserAction;
+import com.radiuk.auth_service.event.UserAction;
 import com.radiuk.auth_service.publisher.UserEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

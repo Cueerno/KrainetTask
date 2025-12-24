@@ -2,7 +2,7 @@ package com.radiuk.auth_service.publisher;
 
 import com.radiuk.auth_service.config.RabbitConfig;
 import com.radiuk.auth_service.event.UserEvent;
-import com.radiuk.auth_service.model.UserAction;
+import com.radiuk.auth_service.event.UserAction;
 import com.radiuk.auth_service.model.UserNotificationMessage;
 import com.radiuk.auth_service.model.User;
 import com.radiuk.auth_service.repository.UserRepository;

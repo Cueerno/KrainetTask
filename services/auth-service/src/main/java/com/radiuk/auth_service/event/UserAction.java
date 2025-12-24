@@ -1,4 +1,4 @@
-package com.radiuk.auth_service.model;
+package com.radiuk.auth_service.event;
 
 public enum UserAction {
     CREATED,
