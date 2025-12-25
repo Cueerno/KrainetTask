@@ -5,14 +5,13 @@ import com.radiuk.auth_service.event.UserCreatedEvent;
 import com.radiuk.auth_service.mapper.UserMapper;
 import com.radiuk.auth_service.model.*;
 import com.radiuk.auth_service.repository.UserRepository;
-import com.radiuk.auth_service.service.AuthService;
-import com.radiuk.auth_service.service.JwtService;
-import com.radiuk.auth_service.service.UserValidatorService;
+import com.radiuk.auth_service.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +26,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final UserValidatorService userValidatorService;
+    private final RefreshTokenService refreshTokenService;
+    private final UserManagementService userManagementService;
 
     @Override
     @Transactional
@@ -48,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse authenticate(UserAuthDto dto) {
         log.debug("Authenticating user {}", dto);
 
@@ -63,7 +64,15 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Invalid credentials: invalid password");
         }
 
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = refreshTokenService.createRefreshToken(user);
+
         log.info("Authenticated user {}", dto);
-        return new AuthResponse(jwtService.generateToken(user));
+        return new AuthResponse(accessToken, refreshToken);
+    }
+
+    public void logout(Jwt jwt) {
+        User user = userManagementService.getUserByIdOrThrow(Long.valueOf(jwt.getSubject()));
+        refreshTokenService.revokeAll(user);
     }
 }
