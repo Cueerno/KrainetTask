@@ -1,9 +1,6 @@
 package com.radiuk.auth_service.contoller;
 
-import com.radiuk.auth_service.dto.UserAuthDto;
-import com.radiuk.auth_service.dto.UserRegistrationDto;
-import com.radiuk.auth_service.dto.UserResponseDto;
-import com.radiuk.auth_service.dto.AuthResponse;
+import com.radiuk.auth_service.dto.*;
 import com.radiuk.auth_service.model.User;
 import com.radiuk.auth_service.service.AuthService;
 import com.radiuk.auth_service.service.JwtService;
@@ -61,10 +58,9 @@ public class AuthController {
     ) {
         User user = refreshTokenService.validateAndGetUser(refreshToken);
 
-        refreshTokenService.revokeAll(user);
+        JwtWithJti newAccessToken = jwtService.generateToken(user);
+        String newRefreshToken = refreshTokenService.createRefreshToken(user, newAccessToken.jti());
 
-        String newRefreshToken = refreshTokenService.createRefreshToken(user);
-        String newAccessToken = jwtService.generateToken(user);
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken)
                 .httpOnly(true)
@@ -76,7 +72,7 @@ public class AuthController {
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        return ResponseEntity.ok(new AuthResponse(newAccessToken, null));
+        return ResponseEntity.ok(new AuthResponse(newAccessToken.accessToken(), null));
     }
 
     @PostMapping("/logout")

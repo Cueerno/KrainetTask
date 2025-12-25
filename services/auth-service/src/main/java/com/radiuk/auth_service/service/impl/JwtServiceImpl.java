@@ -1,5 +1,6 @@
 package com.radiuk.auth_service.service.impl;
 
+import com.radiuk.auth_service.dto.JwtWithJti;
 import com.radiuk.auth_service.model.User;
 import com.radiuk.auth_service.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,21 +25,27 @@ public class JwtServiceImpl implements JwtService {
 
     private final JwtEncoder jwtEncoder;
 
-    public String generateToken(User user) {
+    public JwtWithJti generateToken(User user) {
         Instant now = Instant.now();
+        String jti = UUID.randomUUID().toString();
+
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("auth-service")
                 .issuedAt(now)
-                .expiresAt(now.plusSeconds(tokenExpirySeconds))
                 .subject(user.getId().toString())
+                .expiresAt(now.plusSeconds(tokenExpirySeconds))
                 .claim("email", user.getEmail())
                 .claim("authorities", List.of(user.getRole().name()))
+                .id(jti)
                 .build();
 
-        JwtEncoderParameters params = JwtEncoderParameters.from(
-                JwsHeader.with(MacAlgorithm.HS256).build(), claims
-        );
+        String accessToken = jwtEncoder.encode(
+                JwtEncoderParameters.from(
+                        JwsHeader.with(MacAlgorithm.HS256).build(), claims
+                )
+        ).getTokenValue();
 
-        return jwtEncoder.encode(params).getTokenValue();
+
+        return new JwtWithJti(accessToken, jti);
     }
 }

@@ -26,11 +26,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     @Transactional
-    public String createRefreshToken(User user) {
+    public String createRefreshToken(User user, String jti) {
         String rawToken = UUID.randomUUID().toString();
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setTokenHash(passwordEncoder.encode(rawToken));
+        refreshToken.setJti(jti);
         refreshToken.setUser(user);
         refreshToken.setExpiresAt(Instant.now().plusSeconds(refreshTokenExpirationSeconds));
 
@@ -42,13 +43,29 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional(readOnly = true)
     public User validateAndGetUser(String refreshToken) {
-        return refreshTokenRepository.findAll().stream()
-                .filter(t -> !t.isRevoked())
+        RefreshToken token = refreshTokenRepository.findAll().stream()
                 .filter(t -> passwordEncoder.matches(refreshToken, t.getTokenHash()))
-                .filter(t -> t.getExpiresAt().isAfter(Instant.now()))
-                .map(RefreshToken::getUser)
                 .findFirst()
                 .orElseThrow(() -> new JwtException("Invalid refresh token"));
+
+        if (token.isRevoked()) {
+            refreshTokenRepository.revokeAllByUser(token.getUser());
+            throw new JwtException("Refresh token reuse detected");
+        }
+
+        if (token.getExpiresAt().isBefore(Instant.now())) {
+            throw new JwtException("Refresh token expired");
+        }
+
+        token.setRevoked(true);
+
+        return token.getUser();
+    }
+
+    @Override
+    @Transactional
+    public void revokeByJti(String jti) {
+        refreshTokenRepository.revokeByJti(jti);
     }
 
     @Override

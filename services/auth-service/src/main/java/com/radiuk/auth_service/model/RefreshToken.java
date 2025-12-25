@@ -23,6 +23,8 @@ public class RefreshToken {
 
     private String tokenHash;
 
+    private String jti;
+
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;

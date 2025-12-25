@@ -27,7 +27,6 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserValidatorService userValidatorService;
     private final RefreshTokenService refreshTokenService;
-    private final UserManagementService userManagementService;
 
     @Override
     @Transactional
@@ -64,15 +63,14 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Invalid credentials: invalid password");
         }
 
-        String accessToken = jwtService.generateToken(user);
-        String refreshToken = refreshTokenService.createRefreshToken(user);
+        JwtWithJti jwt = jwtService.generateToken(user);
+        String refreshToken = refreshTokenService.createRefreshToken(user, jwt.jti());
 
         log.info("Authenticated user {}", dto);
-        return new AuthResponse(accessToken, refreshToken);
+        return new AuthResponse(jwt.accessToken(), refreshToken);
     }
 
     public void logout(Jwt jwt) {
-        User user = userManagementService.getUserByIdOrThrow(Long.valueOf(jwt.getSubject()));
-        refreshTokenService.revokeAll(user);
+        refreshTokenService.revokeByJti(jwt.getId());
     }
 }

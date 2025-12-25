@@ -1,6 +1,7 @@
 package com.radiuk.auth_service.config;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -22,16 +24,24 @@ import java.util.Base64;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Value("${jwt.secret-base64}")
     private String secretBase64;
+
+    private final JwtJtiValidationFilter jwtJtiValidationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+
+                        .requestMatchers(
+                                "/api/v1/auth/logout"
+                        ).authenticated()
+
                         .requestMatchers(
                                 "/api/v1/auth/**"
                         ).permitAll()
@@ -52,7 +62,9 @@ public class SecurityConfig {
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
-                );
+                )
+
+                .addFilterAfter(jwtJtiValidationFilter, BearerTokenAuthenticationFilter.class);
 
         return http.build();
     }
