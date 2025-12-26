@@ -31,6 +31,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public UserResponseDto register(UserRegistrationDto userRegistrationDto) {
+        log.debug("Registering user with username {} and email {}", userRegistrationDto.username(), userRegistrationDto.email());
+
         userValidatorService.checkEmailExists(userRegistrationDto.email());
         userValidatorService.checkUsernameExists(userRegistrationDto.username());
 
@@ -44,13 +46,15 @@ public class AuthServiceImpl implements AuthService {
                 new UserCreatedEvent(user.getUsername(), user.getEmail())
         );
 
+        log.info("User {} registered successfully", user.getEmail());
+
         return userMapper.toUserResponseDto(savedUser);
     }
 
     @Override
     @Transactional
     public AuthResponse authenticate(UserAuthDto dto) {
-        log.debug("Authenticating user {}", dto);
+        log.debug("Authenticating user with email {}", dto.email());
 
         User user = userRepository.findByEmail(dto.email())
                 .orElseThrow(() -> {
@@ -66,11 +70,13 @@ public class AuthServiceImpl implements AuthService {
         JwtWithJti jwt = jwtService.generateToken(user);
         String refreshToken = refreshTokenService.createRefreshToken(user, jwt.jti());
 
-        log.info("Authenticated user {}", dto);
+        log.info("Authenticated user with email {}", dto.email());
         return new AuthResponse(jwt.accessToken(), refreshToken);
     }
 
     public void logout(Jwt jwt) {
+        log.debug("Logout user {}", jwt.getClaim("email").toString());
         refreshTokenService.revokeByJti(jwt.getId());
+        log.info("User {} logged out successfully", jwt.getClaim("email").toString());
     }
 }

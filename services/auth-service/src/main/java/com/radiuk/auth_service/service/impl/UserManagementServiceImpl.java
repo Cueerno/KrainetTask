@@ -10,10 +10,12 @@ import com.radiuk.auth_service.repository.UserRepository;
 import com.radiuk.auth_service.service.UserManagementService;
 import com.radiuk.auth_service.service.UserValidatorService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserManagementServiceImpl implements UserManagementService {
@@ -26,6 +28,8 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     @Transactional(readOnly = true)
     public User getUserByIdOrThrow(Long id) {
+        log.debug("Fetching user by id={}", id);
+
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
@@ -33,6 +37,8 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     @Transactional
     public User updateUserById(UserUpdateDto userUpdateDto, Long id) {
+        log.debug("Updating user id={}", id);
+
         User user = getUserByIdOrThrow(id);
 
         userValidatorService.validateEmailChange(userUpdateDto.email(), user.getEmail());
@@ -46,11 +52,15 @@ public class UserManagementServiceImpl implements UserManagementService {
                 new UserUpdatedEvent(savedUser.getUsername(), savedUser.getEmail())
         );
 
+        log.info("User updated id={}", id);
+
         return savedUser;
     }
 
     @Transactional
     public void deleteUserById(Long id) {
+        log.debug("Deleting user id={}", id);
+
         User user = getUserByIdOrThrow(id);
 
         userRepository.deleteById(user.getId());
@@ -58,5 +68,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         applicationEventPublisher.publishEvent(
                 new UserDeletedEvent(user.getUsername(), user.getEmail())
         );
+
+        log.info("User deleted id={}", id);
     }
 }
